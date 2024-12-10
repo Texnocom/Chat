@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Uygulaması</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6e7dff, #4054b2);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #chat {
+            width: 400px;
+            max-width: 100%;
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 90%;
+        }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #2c2c2c;
+            border-radius: 8px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #383838;
+            color: var(--name-color, #fff);
+        }
+        #inputContainer {
+            display: flex;
+            align-items: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #444;
+            color: #fff;
+            margin-right: 10px;
+            outline: none;
+        }
+        button {
+            padding: 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #6e7dff;
+            color: #fff;
+            cursor: pointer;
+        }
+        #emojiPanel {
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: #444;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .emoji-btn {
+            font-size: 18px;
+            margin-right: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        #settings {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        #settings button {
+            flex: 1;
+            margin: 0 5px;
+        }
+        #nameInput, #colorPicker {
+            display: none;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        #nameInput input, #colorPicker input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat">
+        <h2>Chat</h2>
+        <div id="settings">
+            <button id="changeName">Adını qeyt et</button>
+            <button id="changeColor">Mesaj Rəngi</button>
+        </div>
+        <div id="nameInput">
+            <input type="text" id="newName" placeholder="Yeni adınızı yazın..." />
+            <button id="confirmName">Tamam</button>
+        </div>
+        <div id="colorPicker">
+            <input type="color" id="newColor" />
+            <button id="confirmColor">Tamam</button>
+        </div>
+        <div id="messages"></div>
+        <div id="inputContainer">
+            <input id="messageInput" type="text" placeholder="Mesajınızı yazın..." />
+            <button id="emojiBtn">😊</button>
+            <button id="sendBtn">Göndər</button>
+        </div>
+        <div id="emojiPanel">
+            <button class="emoji-btn">👍</button>
+            <button class="emoji-btn">👎</button>
+            <button class="emoji-btn">😀</button>
+            <button class="emoji-btn">😂</button>
+            <button class="emoji-btn">😍</button>
+            <button class="emoji-btn">😎</button>
+            <button class="emoji-btn">😢</button>
+            <button class="emoji-btn">🥳</button>
+            <button class="emoji-btn">😡</button>
+
+        </div>
+    </div>
+
+    <script>
+        let userName = "Kullanıcı";
+        let userColor = "#fff";
+
+        const emojiBtn = document.getElementById('emojiBtn');
+        const emojiPanel = document.getElementById('emojiPanel');
+        const messageInput = document.getElementById('messageInput');
+        const messagesDiv = document.getElementById('messages');
+        const changeNameBtn = document.getElementById('changeName');
+        const confirmNameBtn = document.getElementById('confirmName');
+        const nameInputDiv = document.getElementById('nameInput');
+        const newNameInput = document.getElementById('newName');
+        const changeColorBtn = document.getElementById('changeColor');
+        const confirmColorBtn = document.getElementById('confirmColor');
+        const colorPickerDiv = document.getElementById('colorPicker');
+        const newColorInput = document.getElementById('newColor');
+
+        // Emoji panelini aç/kapat
+        emojiBtn.addEventListener('click', function () {
+            emojiPanel.style.display = emojiPanel.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Emoji ekleme
+        emojiPanel.addEventListener('click', function (event) {
+            if (event.target.classList.contains('emoji-btn')) {
+                const emoji = event.target.textContent;
+                messageInput.value += emoji;
+            }
+        });
+
+        // Mesaj gönderme
+        document.getElementById('sendBtn').addEventListener('click', function () {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message';
+                messageElement.style.color = userColor;
+                messageElement.textContent = `${userName}: ${messageText}`;
+                messagesDiv.appendChild(messageElement);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                messageInput.value = '';
+            }
+        });
+
+        // İsim değiştirme aç
+        changeNameBtn.addEventListener('click', function () {
+            nameInputDiv.style.display = 'flex';
+        });
+
+        // İsim değiştirme tamam
+        confirmNameBtn.addEventListener('click', function () {
+            const newName = newNameInput.value.trim();
+            if (newName) {
+                userName = newName;
+                // alert(`İsminiz "${userName}" olarak değiştirildi.`);
+                nameInputDiv.style.display = 'none';
+                newNameInput.value = '';
+            }
+        });
+
+        // Renk değiştirme aç
+        changeColorBtn.addEventListener('click', function () {
+            colorPickerDiv.style.display = 'flex';
+        });
+
+        // Renk değiştirme tamam
+        confirmColorBtn.addEventListener('click', function () {
+            const newColor = newColorInput.value;
+            if (newColor) {
+                userColor = newColor;
+                // alert(`İsim renginiz değiştirildi.`);
+                colorPickerDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
